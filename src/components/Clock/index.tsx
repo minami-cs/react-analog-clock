@@ -8,7 +8,9 @@ export default function Clock() {
   return (
     <ClockWrap>
       <ClockFace>
-        <ClockHand />
+        <ClockHand type="hour" />
+        <ClockHand type="minute" />
+        <ClockHand type="second" />
       </ClockFace>
     </ClockWrap>
   );
