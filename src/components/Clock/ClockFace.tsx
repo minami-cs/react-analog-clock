@@ -21,7 +21,7 @@ const ClockFaceWrap = styled.div`
   width: ${CLOCK_RADIUS * 2}px;
   height: ${CLOCK_RADIUS * 2}px;
 
-  border: 1px solid #000;
+  border: 3px solid #292929;
   border-radius: 50%;
 `;
 
@@ -39,6 +39,7 @@ const ClockNumberWrap = styled.div<{ clockNumber: number }>`
 const ClockNumber = styled.p<{ clockNumber: number }>`
   font-weight: ${({ clockNumber }) =>
     clockNumber % 3 === 0 ? 'bold' : 'normal'};
+  color: #292929;
 
   transform: ${({ clockNumber }) => `rotate(-${clockNumber * 30}deg)}`};
 `;
