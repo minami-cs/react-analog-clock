@@ -1,16 +1,18 @@
 import React from 'react';
+import { styled } from 'styled-components';
 
 import { CLOCK_HAND_STYLE } from 'constants/clock';
-import { styled } from 'styled-components';
+
+import useMoveClockHand from 'hooks/useMoveClockHand';
 
 type ClockHandType = 'hour' | 'minute' | 'second';
 
-const ROTATE_DEGREE = { hour: 0, minute: 90, second: 180 };
-
 export default function ClockHand({ type }: { type: ClockHandType }) {
+  const degree = useMoveClockHand({ type });
+
   return (
     <>
-      <Hand type={type} />
+      <Hand type={type} degree={degree} />
       <CenterCircle />
     </>
   );
@@ -31,7 +33,7 @@ const CenterCircle = styled.div`
   transform: translate(-50%, -50%);
 `;
 
-const Hand = styled.div<{ type: ClockHandType }>`
+const Hand = styled.div<{ type: ClockHandType; degree: number }>`
   position: absolute;
   bottom: 50%;
   left: 50%;
@@ -39,9 +41,10 @@ const Hand = styled.div<{ type: ClockHandType }>`
   width: ${({ type }) => `${CLOCK_HAND_STYLE[type].width}px`};
   height: ${({ type }) => `${CLOCK_HAND_STYLE[type].height}px`};
 
+  border-radius: 6px 6px 0;
+
   background: ${({ type }) => `${CLOCK_HAND_STYLE[type].color}`};
 
   transform-origin: center bottom;
-  transform: ${({ type }) =>
-    `translate(-50%) rotate(${ROTATE_DEGREE[type]}deg)}`};
+  transform: ${({ degree }) => `translate(-50%) rotate(${degree}deg)}`};
 `;
