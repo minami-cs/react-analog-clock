@@ -23,8 +23,8 @@ const ClockFaceWrap = styled.div`
   width: ${CLOCK_RADIUS * 2}px;
   height: ${CLOCK_RADIUS * 2}px;
 
-  border: 3px solid #292929;
-  border-radius: 50%;
+  border: 4px double #292929;
+  border-radius: 24px;
 `;
 
 const ClockNumberWrap = styled.div<{ clockNumber: number }>`
