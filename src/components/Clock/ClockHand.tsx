@@ -10,28 +10,8 @@ type ClockHandType = 'hour' | 'minute' | 'second';
 export default function ClockHand({ type }: { type: ClockHandType }) {
   const degree = useMoveClockHand({ type });
 
-  return (
-    <>
-      <Hand type={type} degree={degree} />
-      <CenterCircle />
-    </>
-  );
+  return <Hand type={type} degree={degree} />;
 }
-
-const CenterCircle = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-
-  width: 10px;
-  height: 10px;
-
-  border-radius: 50%;
-
-  background: #8c8c8b;
-
-  transform: translate(-50%, -50%);
-`;
 
 const Hand = styled.div<{ type: ClockHandType; degree: number }>`
   position: absolute;

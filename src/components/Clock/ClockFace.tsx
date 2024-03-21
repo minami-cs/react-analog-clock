@@ -1,6 +1,7 @@
-import { CLOCK_NUMBERS, CLOCK_RADIUS } from 'constants/clock';
 import React from 'react';
 import { styled } from 'styled-components';
+
+import { CLOCK_NUMBERS, CLOCK_RADIUS } from 'constants/clock';
 
 export default function ClockFace({ children }: { children: React.ReactNode }) {
   return (
@@ -11,6 +12,7 @@ export default function ClockFace({ children }: { children: React.ReactNode }) {
         </ClockNumberWrap>
       ))}
       {children}
+      <ClockCenterCircle />
     </ClockFaceWrap>
   );
 }
@@ -42,4 +44,19 @@ const ClockNumber = styled.p<{ clockNumber: number }>`
   color: #292929;
 
   transform: ${({ clockNumber }) => `rotate(-${clockNumber * 30}deg)}`};
+`;
+
+const ClockCenterCircle = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+
+  background: #8c8c8b;
+
+  transform: translate(-50%, -50%);
 `;
