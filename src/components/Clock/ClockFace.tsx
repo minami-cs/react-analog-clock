@@ -1,11 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { styled } from 'styled-components';
 
 import { CLOCK_NUMBERS, CLOCK_RADIUS } from 'constants/clock';
+import Tooltip from 'components/Tooltip';
 
 export default function ClockFace({ children }: { children: React.ReactNode }) {
+  const [mousePosition, setMousePosition] = useState<
+    { x: number; y: number } | undefined
+  >(undefined);
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    setMousePosition(undefined);
+  };
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    setMousePosition({ x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY });
+  };
+
   return (
-    <ClockFaceWrap>
+    <ClockFaceWrap
+      onMouseLeave={handleMouseLeave}
+      onMouseMove={handleMouseMove}
+    >
+      {mousePosition && <Tooltip position={mousePosition} />}
       {CLOCK_NUMBERS.map(number => (
         <ClockNumberWrap key={number} clockNumber={number}>
           <ClockNumber clockNumber={number}>{number}</ClockNumber>
