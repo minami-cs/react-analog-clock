@@ -2,10 +2,9 @@ import React from 'react';
 import { styled } from 'styled-components';
 
 import { CLOCK_HAND_STYLE } from 'constants/clock';
+import { ClockHandType } from 'constants/types';
 
 import useMoveClockHand from 'hooks/useMoveClockHand';
-
-type ClockHandType = 'hour' | 'minute' | 'second';
 
 export default function ClockHand({ type }: { type: ClockHandType }) {
   const degree = useMoveClockHand({ type });
