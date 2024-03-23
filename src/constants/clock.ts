@@ -1,8 +1,9 @@
 import { ClockHandType } from './types';
 
 // 시계판
-export const CLOCK_RADIUS = 100;
-export const CLOCK_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+export const CLOCK_RADIUS: number = 100;
+export const CLOCK_NUMBERS: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+export const CLOCK_BORDER: number = 4;
 
 // 시곗바늘
 export const CLOCK_HAND_TYPE_LIST: { id: string; type: ClockHandType }[] = [
