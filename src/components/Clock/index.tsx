@@ -24,6 +24,7 @@ export default function Clock() {
 }
 
 const ClockWrap = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
