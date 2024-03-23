@@ -1,27 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { styled } from 'styled-components';
 
 import { CLOCK_NUMBERS, CLOCK_RADIUS } from 'constants/clock';
-import Tooltip from 'components/Tooltip';
 
 export default function ClockFace({ children }: { children: React.ReactNode }) {
-  const [mousePosition, setMousePosition] = useState<
-    { x: number; y: number } | undefined
-  >(undefined);
-
-  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    setMousePosition(undefined);
-  };
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    setMousePosition({ x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY });
-  };
-
   return (
-    <ClockFaceWrap
-      onMouseLeave={handleMouseLeave}
-      onMouseMove={handleMouseMove}
-    >
-      {mousePosition && <Tooltip position={mousePosition} />}
+    <ClockFaceWrap>
       {CLOCK_NUMBERS.map(number => (
         <ClockNumberWrap key={number} clockNumber={number}>
           <ClockNumber clockNumber={number}>{number}</ClockNumber>
@@ -40,7 +24,7 @@ const ClockFaceWrap = styled.div`
   height: ${CLOCK_RADIUS * 2}px;
 
   border: 4px double #292929;
-  border-radius: 24px;
+  border-radius: 50%;
 `;
 
 const ClockNumberWrap = styled.div<{ clockNumber: number }>`
@@ -73,6 +57,7 @@ const ClockCenterCircle = styled.div`
   border-radius: 50%;
 
   background: #8c8c8b;
+  z-index: 998;
 
   transform: translate(-50%, -50%);
 `;
