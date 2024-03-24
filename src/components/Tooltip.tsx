@@ -1,34 +1,31 @@
 import React from 'react';
-import useClockStore from 'stores/clock';
 import { styled } from 'styled-components';
-import { getFormatCurrentTime } from 'utils/tooltip';
 import { shallow } from 'zustand/shallow';
 
+import useClockStore from 'stores/clock';
+import { getFormatCurrentTime } from 'utils/tooltip';
+
 interface TooltipProps {
-  x: number | undefined;
-  y: number | undefined;
+  id: string;
 }
 
-export default function Tooltip({ x, y }: TooltipProps) {
+export default function Tooltip({ id }: TooltipProps) {
   const { time } = useClockStore(state => ({ time: state.time }), shallow);
 
   return (
-    <TooltipWrap x={x} y={y}>
+    <TooltipWrap id={id}>
       <TooltipText>{getFormatCurrentTime(time)}</TooltipText>
     </TooltipWrap>
   );
 }
 
-const TooltipWrap = styled.div<{
-  x: number | undefined;
-  y: number | undefined;
-}>`
+const TooltipWrap = styled.div`
   position: absolute;
-  top: ${({ y }) => y && `${y - 30}px`};
-  left: ${({ x }) => x && `${x + 10}px`};
 
   display: flex;
   align-items: center;
+
+  visibility: hidden;
 
   width: 100px;
   height: 30px;

@@ -1,35 +1,38 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { styled } from 'styled-components';
-import { shallow } from 'zustand/shallow';
 
-import useTooltipStore from 'stores/tooltip';
 import { isMouseInClock } from 'utils/clock';
 import { CLOCK_RADIUS } from 'constants/clock';
 
 import Tooltip from './Tooltip';
 
 export default function MouseTracker() {
-  const { x, y, setX, setY } = useTooltipStore(
-    state => ({ x: state.x, y: state.y, setX: state.setX, setY: state.setY }),
-    shallow,
-  );
+  const trackerRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (isMouseInClock(e.nativeEvent.offsetX, e.nativeEvent.offsetY)) {
-        setX(e.nativeEvent.offsetX);
-        setY(e.nativeEvent.offsetY);
-      } else {
-        setX(undefined);
-        setY(undefined);
-      }
-    },
-    [setX, setY],
-  );
+  const handleMouseMove = useCallback((e: any) => {
+    const TooltipComponent = document.getElementById(
+      'tooltip',
+    ) as HTMLDivElement;
+
+    if (isMouseInClock(e.offsetX, e.offsetY)) {
+      TooltipComponent.style.visibility = 'visible';
+      TooltipComponent.style.left = `${e.offsetX + 10}px`;
+      TooltipComponent.style.top = `${e.offsetY - 30}px`;
+    } else {
+      TooltipComponent.style.visibility = 'hidden';
+    }
+  }, []);
+
+  useEffect(() => {
+    const tracker = trackerRef.current;
+    tracker?.addEventListener('mousemove', handleMouseMove);
+
+    return () => tracker?.removeEventListener('mousemove', handleMouseMove);
+  }, [handleMouseMove, trackerRef]);
 
   return (
-    <MouseTrackerWrap onMouseMove={handleMouseMove}>
-      {x && y && <Tooltip x={x} y={y} />}
+    <MouseTrackerWrap ref={trackerRef}>
+      <Tooltip id="tooltip" />
     </MouseTrackerWrap>
   );
 }
