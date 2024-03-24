@@ -1,32 +1,22 @@
 import { useEffect, useRef } from 'react';
-import { shallow } from 'zustand/shallow';
-
-import useClockStore from 'stores/clock';
 
 /**
  * 1초마다 시간을 갱신해주는 커스텀 훅
  * @param delay ms시간
+ * @param callback (args?: any) => void 형태의 콜백함수
  * @returns void
  */
-function useTimeInterval(delay: number): void {
-  const savedCallback = useRef<(time: Date) => void>();
-  const { setTime } = useClockStore(
-    state => ({
-      setTime: state.setTime,
-    }),
-    shallow,
-  );
+function useTimeInterval(delay: number, callback: (args?: any) => void): void {
+  const savedCallback = useRef<(args?: any) => void>();
 
   useEffect(() => {
-    savedCallback.current = setTime;
-  }, [setTime]);
+    savedCallback.current = callback;
+  }, [callback]);
 
   useEffect(() => {
     function tick() {
-      const date = new Date();
-
       if (savedCallback && savedCallback.current) {
-        savedCallback.current(date);
+        savedCallback.current();
       }
     }
 
