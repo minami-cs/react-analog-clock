@@ -1,46 +1,64 @@
-# Getting Started with Create React App
+# 아날로그 시계 구현하기
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 사용 기술
 
-## Available Scripts
+- SPA: React v18
+- 언어: TypeScript
+- 전역 상태관리: Zustand
+- 스타일: Styled-Components
+- 코드 스타일 및 포매터: eslint, prettier
 
-In the project directory, you can run:
+## 구현 사항
 
-### `npm start`
+### 구현 요구사항
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- [x] 현재 시간을 시침, 분침, 초침으로 표현
+- [x] 시계에 마우스 오버를 했을 때 현재 시간을 툴팁으로 표시
+- [x] 툴팁이 마우스 포인터를 따라서 이동
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### 구현 화면
 
-### `npm test`
+[clock](https://github.com/minami-cs/react-analog-clock/assets/66506477/4dec7dba-f7af-4e3c-966e-816428ae77da)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 구현 시 고려한 사항
 
-### `npm run build`
+### 시계
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. 시간
+   - 기본 Date 객체를 이용하여 현재 시간을 구하여 전역 스토어에 `time`으로 저장해두고 사용하도록 하였습니다. 시계 컴포넌트와 툴팁 컴포넌트에서 모두 사용하여야 하는데 1초 단위로 계속 바뀌는 시간을 각각 로컬 컴포넌트에서 별도의 상태로 관리하기에는 성능 면에서 좋지 않을 것으로 판단하고 전역 스토어에서 관리합니다.
+   - 현재 시간을 구할 때는 커스텀 훅 `useTimeInterval` 을 만들어서 1000ms(1초) 단위로 콜백함수를 통해 새로운 Date 객체를 구하여 `time`의 상태를 업데이트합니다.
+   - 커스텀 훅 `useTimeInterval`은 콜백함수와 콜백함수를 호출할 밀리초 단위의 시간을 인자로 받아서 실행할 수 있도록 하여 범용성을 높였으며, `useRef`를 내부적으로 사용하여 리렌더링을 최소화하였고, 커스텀 훅으로 만듦으로써 시계 컴포넌트에서 사용시 코드를 간결하게 보이도록 합니다. 또한, 매초 새로운 시간을 보여주어야 하는 기능 요구사항이 있는 만큼 여러 군데에서 `time`을 업데이트할 필요없이 `useTimeInterval`을 시계 컴포넌트 최상단에서 한 번 호출하는 것만 하도록 함으로써 리렌더링을 최소화하려고 했습니다.
+2. 시계
+   - 시계판과 시계침 컴포넌트를 분리하여 하나의 시계 컴포넌트를 이룰 수 있도록 구성하였습니다. 특히, 시계침은 `<ClockHand />` 컴포넌트 하나로 시침, 분침, 초침에 해당하는 `type`을 prop으로 받아서 하나의 컴포넌트를 재사용할 수 있도록 합니다.
+   - 시계 컴포넌트 구조 참고
+     ```React
+     // Clock 컴포넌트 - index.tsx
+     <ClockWrap>
+       <ClockFace>
+     	{CLOCK_HAND_TYPE_LIST.map(clockHand => (
+     	  <ClockHand key={clockHand.id} type={clockHand.type} />
+     	))}
+       </ClockFace>
+       <MouseTracker />
+     </ClockWrap>
+     ```
+3. 시계침
+   - `useTimeInterval`은 콜백함수를 지정한 시간에 맞추어 호출하도록 하는 기능만 하도록 하고, 각 시계침의 각도를 구하는 기능은 별도로 `useMoveClockHand` 커스텀훅을 만들어서 활용하도록 분리하였습니다.
+   - `useMoveClockHand` 커스텀 훅 내부에서는 `getClockHandDegree` 함수를 이용하여 각 시계침의 각도를 구할 수 있도록 하였으며 분은 초를 함께 이용하고, 시는 분을 함께 이용할 수 있도록 재귀 호출 형태로 구현하였습니다.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 툴팁
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. 마우스 포인터 움직임 감지
+   - 시계 위에서만 툴팁이 마우스 포인터의 위치를 따라다닐 수 있도록 마우스 포인터의 위치를 실시간으로 추적하고 툴팁 컴포넌트를 표시해줄 `<MouseTracker />` 컴포넌트를 별도로 구현하여 적용했습니다.
+   - 실시간으로 마우스 포인터 위치를 감지하여야 한다는 점을 고려하였을 때 이벤트를 여러 개 등록하는 것보다 `onMouseMove` 이벤트 하나만 등록하는 것이 나을 것이라고 생각되어 `onMouseMove` 이벤트 하나만 등록하였고, `onMouseMove`로 전달되는 이벤트인 `handleMouseMove` 컴포넌트에서는 마우스 포인터의 위치를 툴팁 컴포넌트에 바로 적용할 수 있도록 합니다.
+   - `handleMouseMove` 함수에서 마우스 포인터 위치를 감지하고 있기 때문에 `<MouseTracker />` 컴포넌트에 마우스가 들어오거나 나가는 경우를 처리하기 위해서 `isMouseInClock` 함수를 유틸 함수로 작성하였고, 마우스 포인터의 위치가 시계판 내부에 있는지 여부를 원 내부의 점을 구하는 공식을 활용하여 판단합니다.
+   - 툴팁 컴포넌트는 최대한 끊김없이 마우스 포인터를 따라다니면서도 렌더링에 최대한 영향을 주지 않도록 하기 위해서 상태나 props를 사용하기 보다는 직접 DOM을 컨트롤하는 방식으로 구현하였습니다. 자연스러운 움직임 표현을 위해 `requestAnimationFrame`을 사용하는 것도 생각해보았으나 계속해서 무한루프를 돌듯이 함수를 호출하여 렌더링을 하는 것이 효율적이지 않을 것이라고 판단하여 사용하지 않았습니다.
+2. 툴팁
+   - 24시가 아닌 12시 체제로 시간을 나타냅니다. 그래서 `time.getHours() % 12`로 시를 나타내도록 하였는데 오전과 오후 12시가 모두 0시로 나타날 수 있기 때문에 `time.getHours() % 12`의 값이 0일 때는 12시로 나타낼 수 있도록 추가적인 처리를 합니다.
+   - 마우스 포인터를 따라서 계속해서 움직이는 툴팁에 매초 표기하는 시간이 달라지도록 상태 업데이트가 일어나면 그만큼 렌더링이 계속 일어날 것이라는 점과 디지털 시계를 볼 때 일반적으로 초를 제외하고 표기하는 경우가 많은 점을 고려하여 툴팁에서는 오전과 오후 구분, 시, 분만 표기합니다.
 
-### `npm run eject`
+### 기타 사항
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- 상수형으로 고정된 값을 사용하거나, 여러 컴포넌트에 걸쳐서 사용하는 코드는 `constants/` 하위에 모아두고 공용으로 사용하도록 하였습니다.
+- 기능 함수는 별도로 `utils/` 하위로 분리하였고, 각 컴포넌트에는 필요한 이벤트 핸들러만 함께 작성하였습니다.
+- `zustand`를 전역 상태 관리 라이브러리로 채택한 이유는 가볍고 사용하기 편해서입니다. 관리할 전역 상태가 많지 않았고 서버와의 API 통신 등이 없기 때문에 `redux`처럼 보일러플레이트가 많이 필요한 라이브러리를 사용할 필요가 없다고 생각했습니다. 이번에 `zustand`를 처음 사용해보았는데 작성해야 하는 코드의 양이 적고 가벼우며, 여러 개의 전역 상태를 꺼내어 쓰는 경우 `shallow`를 통해 변화가 있는 전역 상태만 감지하여 렌더링을 최소화시켜준다는 점이 좋았고 이번 프로젝트에 적합한 것 같았습니다.
