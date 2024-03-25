@@ -42,10 +42,11 @@ function getClockHandDegree({
       );
     case 'hour':
       return (
-        (time.getHours() % 12) * HOUR_DEGREE +
-        getClockHandDegree({ type: 'minute', time }) / MINUTE_AND_SECOND +
-        getClockHandDegree({ type: 'second', time }) /
-          (MINUTE_AND_SECOND * MINUTE_AND_SECOND)
+        Math.round(
+          ((time.getHours() % 12) * HOUR_DEGREE +
+            getClockHandDegree({ type: 'minute', time }) / MINUTE_AND_SECOND) *
+            100,
+        ) / 100
       );
   }
 }
