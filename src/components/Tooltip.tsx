@@ -5,19 +5,15 @@ import { shallow } from 'zustand/shallow';
 import useClockStore from 'stores/clock';
 import { getFormatCurrentTime } from 'utils/tooltip';
 
-interface TooltipProps {
-  id: string;
-}
-
-export default function Tooltip({ id }: TooltipProps) {
+const Tooltip = React.forwardRef<HTMLDivElement>((_props, ref) => {
   const { time } = useClockStore(state => ({ time: state.time }), shallow);
 
   return (
-    <TooltipWrap id={id}>
+    <TooltipWrap ref={ref}>
       <TooltipText>{getFormatCurrentTime(time)}</TooltipText>
     </TooltipWrap>
   );
-}
+});
 
 const TooltipWrap = styled.div`
   position: absolute;
@@ -45,3 +41,5 @@ const TooltipText = styled.p`
   font-size: 14px;
   color: #fff;
 `;
+
+export default Tooltip;
